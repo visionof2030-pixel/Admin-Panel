@@ -3,28 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin Panel – SmartTest</title>
+
 <style>
-body{font-family:Tahoma;background:#0f3c4c;color:#fff;padding:20px}
-input,button{padding:8px;margin:4px}
-table{width:100%;border-collapse:collapse;margin-top:20px}
-td,th{border:1px solid #ccc;padding:6px;text-align:center}
-button{cursor:pointer}
+body{
+    font-family:Tahoma,Arial,sans-serif;
+    background:#0b1f2a;
+    color:#eaf6ff;
+    padding:20px;
+}
+
+h2,h3{
+    color:#4dd0e1;
+}
+
+input{
+    padding:10px;
+    margin:6px 0;
+    border-radius:6px;
+    border:none;
+    width:100%;
+    background:#102a36;
+    color:#fff;
+}
+
+input::placeholder{
+    color:#9fbfcf;
+}
+
+button{
+    padding:10px 14px;
+    margin:6px 4px;
+    border:none;
+    border-radius:6px;
+    background:#1e88e5;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1565c0;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+    background:#102a36;
+    border-radius:8px;
+    overflow:hidden;
+}
+
+th{
+    background:#0d3b4f;
+    color:#4dd0e1;
+    padding:10px;
+}
+
+td{
+    padding:8px;
+    border-bottom:1px solid #1c4b63;
+}
+
+tr:nth-child(even){
+    background:#0f3446;
+}
+
+tr:hover{
+    background:#144a63;
+}
+
+.actions button{
+    background:#26a69a;
+}
+
+.actions button:hover{
+    background:#1f8f85;
+}
+
+button.delete{
+    background:#e53935;
+}
+
+button.delete:hover{
+    background:#c62828;
+}
+
+button.disable{
+    background:#fb8c00;
+}
+
+button.disable:hover{
+    background:#ef6c00;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+}
 </style>
 </head>
-<body>
 
-<h2>🔐 Admin Panel</h2>
+<body>
+<div class="container">
+
+<h2>🔐 لوحة التحكم – SmartTest</h2>
 
 <input id="secret" placeholder="ADMIN SECRET">
 <button onclick="load()">تحميل المفاتيح</button>
 
-<h3>➕ إنشاء مفتاح</h3>
-<input id="days" placeholder="الأيام" value="30">
+<h3>➕ إنشاء مفتاح جديد</h3>
+<input id="days" placeholder="مدة الاشتراك بالأيام" value="30">
 <input id="max" placeholder="عدد الطلبات" value="1000">
 <input id="owner" placeholder="اسم العميل">
-<button onclick="create()">إنشاء</button>
+<button onclick="create()">إنشاء المفتاح</button>
 
 <table id="table"></table>
+
+</div>
 
 <script>
 const API = "https://batching-project.onrender.com";
@@ -52,18 +148,18 @@ async function create(){
 }
 
 function render(data){
-  let html="<tr><th>Key</th><th>Used</th><th>Max</th><th>Active</th><th>Owner</th><th>Actions</th></tr>";
+  let html="<tr><th>المفتاح</th><th>المستخدم</th><th>الحد</th><th>الحالة</th><th>العميل</th><th>إجراءات</th></tr>";
   data.forEach(l=>{
     html+=`<tr>
       <td>${l.license_key}</td>
       <td>${l.used_requests}</td>
       <td>${l.max_requests}</td>
-      <td>${l.is_active}</td>
-      <td>${l.owner}</td>
-      <td>
+      <td>${l.is_active ? "✅ نشط" : "❌ موقوف"}</td>
+      <td>${l.owner || "-"}</td>
+      <td class="actions">
         <button onclick="reset('${l.license_key}')">Reset</button>
-        <button onclick="disable('${l.license_key}')">Disable</button>
-        <button onclick="del('${l.license_key}')">Delete</button>
+        <button class="disable" onclick="disable('${l.license_key}')">Disable</button>
+        <button class="delete" onclick="del('${l.license_key}')">Delete</button>
       </td>
     </tr>`;
   });
