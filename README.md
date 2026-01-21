@@ -6,9 +6,7 @@
 <title>Admin Panel – SmartTest</title>
 
 <style>
-*{
-    box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
     margin:0;
@@ -40,10 +38,6 @@ input{
     background:#fff;
 }
 
-input::placeholder{
-    color:#555;
-}
-
 button{
     width:100%;
     padding:12px;
@@ -57,9 +51,7 @@ button{
     cursor:pointer;
 }
 
-button:hover{
-    background:#1565c0;
-}
+button:hover{background:#1565c0}
 
 table{
     width:100%;
@@ -83,10 +75,6 @@ th{
     font-weight:bold;
 }
 
-tr:last-child td{
-    border-bottom:none;
-}
-
 .actions{
     display:flex;
     flex-direction:column;
@@ -94,38 +82,21 @@ tr:last-child td{
 }
 
 .actions button{
-    width:100%;
     padding:8px;
     font-size:14px;
 }
 
-button.disable{
-    background:#fb8c00;
-}
+button.copy{background:#2e7d32}
+button.copy:hover{background:#1b5e20}
 
-button.disable:hover{
-    background:#ef6c00;
-}
+button.disable{background:#fb8c00}
+button.disable:hover{background:#ef6c00}
 
-button.delete{
-    background:#e53935;
-}
+button.delete{background:#e53935}
+button.delete:hover{background:#c62828}
 
-button.delete:hover{
-    background:#c62828;
-}
-
-/* تحسين العرض للجوال */
 @media (min-width:768px){
-    body{
-        padding:20px;
-    }
-    .actions{
-        flex-direction:row;
-    }
-    .actions button{
-        width:auto;
-    }
+    .actions{flex-direction:row}
 }
 </style>
 </head>
@@ -152,13 +123,15 @@ button.delete:hover{
 const API = "https://batching-project.onrender.com";
 
 async function load(){
-  const r = await fetch(API+"/admin/licenses",{headers:{"x-admin-key":secret.value}});
+  const r = await fetch(API+"/admin/licenses",{
+    headers:{"x-admin-key":secret.value}
+  });
   const d = await r.json();
   render(d);
 }
 
 async function create(){
-  await fetch(API+"/admin/create",{
+  const r = await fetch(API+"/admin/create",{
     method:"POST",
     headers:{
       "Content-Type":"application/json",
@@ -170,19 +143,44 @@ async function create(){
       owner:owner.value
     })
   });
+  const data = await r.json();
+  alert("تم إنشاء المفتاح:\n"+data.license_key);
   load();
 }
 
+function daysLeft(exp){
+  const now = new Date();
+  const end = new Date(exp);
+  const diff = Math.ceil((end-now)/(1000*60*60*24));
+  return diff>0 ? diff : 0;
+}
+
+function copyKey(key){
+  navigator.clipboard.writeText(key);
+  alert("تم نسخ المفتاح");
+}
+
 function render(data){
-  let html="<tr><th>المفتاح</th><th>المستخدم</th><th>الحد</th><th>الحالة</th><th>العميل</th><th>إجراءات</th></tr>";
+  let html=`<tr>
+    <th>المفتاح</th>
+    <th>الأيام المتبقية</th>
+    <th>المستخدم</th>
+    <th>الحد</th>
+    <th>الحالة</th>
+    <th>العميل</th>
+    <th>إجراءات</th>
+  </tr>`;
+
   data.forEach(l=>{
     html+=`<tr>
       <td>${l.license_key}</td>
+      <td>${daysLeft(l.expires_at)}</td>
       <td>${l.used_requests}</td>
       <td>${l.max_requests}</td>
       <td>${l.is_active ? "نشط" : "موقوف"}</td>
       <td>${l.owner || "-"}</td>
       <td class="actions">
+        <button class="copy" onclick="copyKey('${l.license_key}')">Copy</button>
         <button onclick="reset('${l.license_key}')">Reset</button>
         <button class="disable" onclick="disable('${l.license_key}')">Disable</button>
         <button class="delete" onclick="del('${l.license_key}')">Delete</button>
@@ -193,9 +191,13 @@ function render(data){
 }
 
 async function reset(k){
-  await fetch(API+"/admin/reset-device/"+k,{method:"POST",headers:{"x-admin-key":secret.value}});
+  await fetch(API+"/admin/reset-device/"+k,{
+    method:"POST",
+    headers:{"x-admin-key":secret.value}
+  });
   load();
 }
+
 async function disable(k){
   await fetch(API+"/admin/update/"+k,{
     method:"PUT",
@@ -207,8 +209,13 @@ async function disable(k){
   });
   load();
 }
+
 async function del(k){
-  await fetch(API+"/admin/delete/"+k,{method:"DELETE",headers:{"x-admin-key":secret.value}});
+  if(!confirm("هل أنت متأكد من حذف المفتاح؟")) return;
+  await fetch(API+"/admin/delete/"+k,{
+    method:"DELETE",
+    headers:{"x-admin-key":secret.value}
+  });
   load();
 }
 </script>
