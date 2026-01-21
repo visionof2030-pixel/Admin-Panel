@@ -2,41 +2,57 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel – SmartTest</title>
 
 <style>
+*{
+    box-sizing:border-box;
+}
+
 body{
+    margin:0;
+    padding:12px;
     font-family:Tahoma,Arial,sans-serif;
-    background:#0b1f2a;
-    color:#eaf6ff;
-    padding:20px;
+    background:#f2f5f7;
+    color:#000;
+}
+
+.container{
+    max-width:100%;
+    margin:auto;
 }
 
 h2,h3{
-    color:#4dd0e1;
+    text-align:center;
+    margin:10px 0;
+    color:#000;
 }
 
 input{
-    padding:10px;
-    margin:6px 0;
-    border-radius:6px;
-    border:none;
     width:100%;
-    background:#102a36;
-    color:#fff;
+    padding:12px;
+    margin:6px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:16px;
+    color:#000;
+    background:#fff;
 }
 
 input::placeholder{
-    color:#9fbfcf;
+    color:#555;
 }
 
 button{
-    padding:10px 14px;
-    margin:6px 4px;
+    width:100%;
+    padding:12px;
+    margin:6px 0;
     border:none;
-    border-radius:6px;
-    background:#1e88e5;
+    border-radius:8px;
+    background:#1976d2;
     color:#fff;
+    font-size:16px;
     font-weight:bold;
     cursor:pointer;
 }
@@ -48,45 +64,39 @@ button:hover{
 table{
     width:100%;
     border-collapse:collapse;
-    margin-top:20px;
-    background:#102a36;
-    border-radius:8px;
+    margin-top:12px;
+    background:#fff;
+    border-radius:10px;
     overflow:hidden;
+    font-size:14px;
+}
+
+th,td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    text-align:center;
+    color:#000;
 }
 
 th{
-    background:#0d3b4f;
-    color:#4dd0e1;
-    padding:10px;
+    background:#e3e7ea;
+    font-weight:bold;
 }
 
-td{
-    padding:8px;
-    border-bottom:1px solid #1c4b63;
+tr:last-child td{
+    border-bottom:none;
 }
 
-tr:nth-child(even){
-    background:#0f3446;
-}
-
-tr:hover{
-    background:#144a63;
+.actions{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
 }
 
 .actions button{
-    background:#26a69a;
-}
-
-.actions button:hover{
-    background:#1f8f85;
-}
-
-button.delete{
-    background:#e53935;
-}
-
-button.delete:hover{
-    background:#c62828;
+    width:100%;
+    padding:8px;
+    font-size:14px;
 }
 
 button.disable{
@@ -97,9 +107,25 @@ button.disable:hover{
     background:#ef6c00;
 }
 
-.container{
-    max-width:1100px;
-    margin:auto;
+button.delete{
+    background:#e53935;
+}
+
+button.delete:hover{
+    background:#c62828;
+}
+
+/* تحسين العرض للجوال */
+@media (min-width:768px){
+    body{
+        padding:20px;
+    }
+    .actions{
+        flex-direction:row;
+    }
+    .actions button{
+        width:auto;
+    }
 }
 </style>
 </head>
@@ -154,7 +180,7 @@ function render(data){
       <td>${l.license_key}</td>
       <td>${l.used_requests}</td>
       <td>${l.max_requests}</td>
-      <td>${l.is_active ? "✅ نشط" : "❌ موقوف"}</td>
+      <td>${l.is_active ? "نشط" : "موقوف"}</td>
       <td>${l.owner || "-"}</td>
       <td class="actions">
         <button onclick="reset('${l.license_key}')">Reset</button>
